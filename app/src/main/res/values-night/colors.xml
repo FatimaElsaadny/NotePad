@@ -1,0 +1,19 @@
+<resources>
+    <!-- General -->
+    <color name="colorPrimary">#5C4431</color>
+    <color name="colorPrimaryDark">#5C4431</color>
+    <color name="colorAccent">#BB86FC</color>
+    <color name="background">#121212</color>
+
+    <!-- Notes List Screen -->
+    <color name="cardBackground">#1E1E1E</color>
+    <color name="cardShadow">#000000</color>
+    <color name="cardTitleText">#FFFFFF</color>
+    <color name="cardSubtitleText">#B0B0B0</color>
+    <color name="fabColor">#5C4431</color>
+
+    <!-- Single Note Screen -->
+    <color name="noteTitleText">#FFFFFF</color>
+    <color name="noteContentText">#DDDDDD</color>
+    <color name="dividerColor">#444444</color>
+</resources>

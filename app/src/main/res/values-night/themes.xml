@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Base application theme (Light Mode) -->
+    <!-- Base application theme (Dark Mode) -->
     <style name="Theme.NotePad" parent="Theme.MaterialComponents.DayNight.NoActionBar">
 
         <!-- Primary branding colors -->
@@ -16,7 +16,7 @@
 
         <!-- Status bar and system bars -->
         <item name="android:statusBarColor">@color/colorPrimary</item>
-        <item name="android:windowLightStatusBar">true</item> <!-- Dark icons on light toolbar/status bar -->
+        <item name="android:windowLightStatusBar">false</item> <!-- Light icons on dark toolbar/status bar -->
 
         <!-- Window background -->
         <item name="android:windowBackground">@color/background</item>
