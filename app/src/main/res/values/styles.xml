@@ -2,12 +2,16 @@
 
     <!-- Base application theme -->
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary branding colors -->
+        <!-- Primary colors -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryVariant">@color/colorPrimary</item> <!-- Match toolbar -->
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+
+        <!-- Status and navigation bars -->
+        <item name="android:statusBarColor">@color/colorPrimary</item> <!-- Same as toolbar -->
         <item name="android:navigationBarColor">@color/colorPrimary</item>
+
+        <!-- Window background -->
         <item name="android:windowBackground">@color/background</item>
     </style>
 
@@ -23,7 +27,7 @@
         <item name="cardElevation">4dp</item>
     </style>
 
-    <!-- Floating Action Button -->
+    <!-- Floating Action Button style -->
     <style name="FabStyle" parent="Widget.MaterialComponents.FloatingActionButton">
         <item name="backgroundTint">@color/fabColor</item>
     </style>

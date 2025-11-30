@@ -1,13 +1,16 @@
 package com.example.notepad.ui.main;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,11 +33,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Make app follow system light/dark mode
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+
+        // 🔥 Make app edge-to-edge
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            );
+        }
+
         setContentView(R.layout.activity_main);
+
         db = AppDatabase.getInstance(this);
         noteDao = db.noteDao();
+
         Toolbar toolbar = findViewById(R.id.toolbarMain);
         setSupportActionBar(toolbar);
+
         recyclerView = findViewById(R.id.recyclerViewNotes);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -43,9 +61,11 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fabAddNote);
         fab.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, EditNoteActivity.class);
-            startActivity(intent);  // Open empty edit screen
+            startActivity(intent);
         });
-        }
+    }
+
+
 
     @Override
     protected void onResume() {
@@ -88,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
             if (!title.isEmpty() || !content.isEmpty()) {
                 Note note = new Note(title, content);
                 db.noteDao().insert(note);
-                loadNotes(); // refresh list
+                loadNotes();
             }
         });
 

@@ -12,10 +12,9 @@
     <!-- Close Button (Left) -->
     <ImageView
         android:id="@+id/btnClose"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
         android:src="@drawable/ic_close"
-
         app:tint="@color/cardTitleText"
         android:contentDescription="Close" />
 
@@ -27,8 +26,8 @@
     <!-- Save Button (Right) -->
     <ImageView
         android:id="@+id/btnSave"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
         android:src="@drawable/ic_check"
         app:tint="@color/cardTitleText"
         android:contentDescription="Save" />
