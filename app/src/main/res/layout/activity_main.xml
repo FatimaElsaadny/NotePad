@@ -20,8 +20,17 @@
             android:title="My Notes"
             android:titleTextColor="@color/cardTitleText"
             app:titleCentered="true"
-            android:elevation="4dp"
-            android:fitsSystemWindows="true"/>
+            android:elevation="4dp"/>
+
+        <!-- ⭐ Search Bar -->
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/searchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:queryHint="Search notes..."
+            android:iconifiedByDefault="false"
+            android:background="@color/cardBackground"
+            android:padding="6dp"/>
 
         <!-- RecyclerView -->
         <androidx.recyclerview.widget.RecyclerView
@@ -36,7 +45,7 @@
 
     </LinearLayout>
 
-    <!-- Floating Action Button -->
+    <!-- FAB Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddNote"
         android:layout_width="wrap_content"
@@ -44,7 +53,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="20dp"
         android:src="@drawable/ic_add"
-        android:contentDescription="Add Note"
         app:tint="@android:color/white"
         app:backgroundTint="@color/fabColor" />
 

@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,23 +22,27 @@ import com.example.notepad.data.model.Note;
 import com.example.notepad.ui.edit.EditNoteActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
     private RecyclerView recyclerView;
     private NoteAdapter adapter;
-    private List<Note> notes;
+    private List<Note> notes = new ArrayList<>();
+    private List<Note> filteredNotes = new ArrayList<>();
+
     private AppDatabase db;
     protected NoteDao noteDao;
+
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Make app follow system light/dark mode
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
 
-        // 🔥 Make app edge-to-edge
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimary));
             getWindow().getDecorView().setSystemUiVisibility(
@@ -53,10 +58,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbarMain);
         setSupportActionBar(toolbar);
 
+        searchView = findViewById(R.id.searchView);
+
         recyclerView = findViewById(R.id.recyclerViewNotes);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         loadNotes();
+        setupSearchView();
 
         FloatingActionButton fab = findViewById(R.id.fabAddNote);
         fab.setOnClickListener(v -> {
@@ -65,25 +73,63 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-
-
     @Override
     protected void onResume() {
         super.onResume();
         if (noteDao != null) {
             notes.clear();
             notes.addAll(noteDao.getAllNotes());
+            filteredNotes.clear();
+            filteredNotes.addAll(notes);
             adapter.notifyDataSetChanged();
         }
     }
 
     private void loadNotes() {
-        notes = db.noteDao().getAllNotes();
-        adapter = new NoteAdapter(MainActivity.this, notes);
+        notes = noteDao.getAllNotes();
+        filteredNotes.clear();
+        filteredNotes.addAll(notes);
+
+        adapter = new NoteAdapter(MainActivity.this, filteredNotes);
         recyclerView.setAdapter(adapter);
     }
 
+    private void setupSearchView() {
+        searchView.clearFocus();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                filterNotes(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterNotes(newText);
+                return true;
+            }
+        });
+    }
+
+    private void filterNotes(String text) {
+        filteredNotes.clear();
+
+        if (text == null || text.trim().isEmpty()) {
+            filteredNotes.addAll(notes);
+        } else {
+            String searchText = text.toLowerCase().trim();
+            for (Note note : notes) {
+                if (note.getTitle().toLowerCase().contains(searchText)) {
+                    filteredNotes.add(note);
+                }
+            }
+        }
+
+        adapter.notifyDataSetChanged();
+    }
+
     private void showAddNoteDialog() {
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add Note");
 

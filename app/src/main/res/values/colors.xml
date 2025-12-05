@@ -15,5 +15,5 @@
     <!-- Single Note Screen -->
     <color name="noteTitleText">#000000</color>
     <color name="noteContentText">#333333</color>
-    <color name="dividerColor">#CCCCCC</color>
+    <color name="dividerColor">@color/background</color>
 </resources>

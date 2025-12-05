@@ -18,19 +18,28 @@ import com.example.notepad.data.database.AppDatabase;
 import com.example.notepad.data.model.Note;
 import com.example.notepad.ui.edit.EditNoteActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
 
     private Context context;
+
+    // Main visible list
     private List<Note> notes;
+
+    // Full list backup for searching
+    private List<Note> notesFull;
+
     private NoteDao noteDao;
 
     public NoteAdapter(Context context, List<Note> notes) {
         this.context = context;
         this.notes = notes;
 
-        // Correct DAO initialization
+        // Create a backup copy for search
+        this.notesFull = new ArrayList<>(notes);
+
         this.noteDao = AppDatabase.getInstance(context).noteDao();
     }
 
@@ -56,7 +65,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
             context.startActivity(intent);
         });
 
-        // Long click → Delete note
+        // Long-click → Delete note
         holder.itemView.setOnLongClickListener(v -> {
             new AlertDialog.Builder(context)
                     .setTitle("Delete Note")
@@ -71,16 +80,18 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
                         // Delete from DB
                         noteDao.delete(selectedNote);
 
-                        // Delete from list
+                        // Remove from lists
                         notes.remove(pos);
+                        notesFull.remove(selectedNote);
 
-                        // Update RecyclerView
+                        // Update view
                         notifyItemRemoved(pos);
 
                         Toast.makeText(context, "Note deleted", Toast.LENGTH_SHORT).show();
                     })
                     .setNegativeButton("No", null)
                     .show();
+
             return true;
         });
     }
@@ -88,6 +99,25 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     @Override
     public int getItemCount() {
         return notes.size();
+    }
+
+    // ⭐ SEARCH FILTER METHOD ⭐
+    public void filter(String text) {
+        notes.clear();
+
+        if (text == null || text.trim().isEmpty()) {
+            notes.addAll(notesFull);  // show all notes
+        } else {
+            String query = text.toLowerCase().trim();
+
+            for (Note note : notesFull) {
+                if (note.getTitle().toLowerCase().contains(query)) {
+                    notes.add(note);
+                }
+            }
+        }
+
+        notifyDataSetChanged();
     }
 
     static class NoteViewHolder extends RecyclerView.ViewHolder {
