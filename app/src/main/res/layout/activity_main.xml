@@ -22,7 +22,7 @@
             app:titleCentered="true"
             android:elevation="4dp"/>
 
-        <!-- ⭐ Search Bar -->
+        <!-- Search Bar -->
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchView"
             android:layout_width="match_parent"
@@ -42,12 +42,37 @@
             android:clipToPadding="false"
             android:scrollbars="vertical"
             android:background="@color/background" />
-
     </LinearLayout>
 
-    <!-- FAB Button -->
+    <!-- MINI FAB: Add Text Note -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddNote"
+        android:id="@+id/fabTextNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="100dp"
+        android:src="@drawable/ic_write"
+        android:visibility="gone"
+        app:tint="@android:color/white"
+        app:backgroundTint="@color/fabColor" />
+
+    <!-- MINI FAB: Add Voice Note -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabVoiceNote"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="170dp"
+        android:src="@drawable/ic_microphone"
+        android:visibility="gone"
+        app:tint="@android:color/white"
+        app:backgroundTint="@color/fabColor" />
+
+    <!-- MAIN FAB -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabMain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

@@ -11,12 +11,14 @@
     app:strokeColor="@color/cardShadow"
     app:cardBackgroundColor="@color/cardBackground">
 
+    <!-- ROOT -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Title -->
         <TextView
             android:id="@+id/textTitle"
             android:layout_width="match_parent"
@@ -27,6 +29,7 @@
             android:ellipsize="end"
             android:textColor="@color/cardTitleText" />
 
+        <!-- Content -->
         <TextView
             android:id="@+id/textContent"
             android:layout_width="match_parent"
@@ -36,6 +39,23 @@
             android:ellipsize="end"
             android:textColor="@color/cardSubtitleText"
             android:layout_marginTop="4dp" />
+
+        <!-- FOOTER ROW -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:id="@+id/textDateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="12sp"
+                android:textColor="@color/cardSubtitleText"/>
+        </LinearLayout>
 
     </LinearLayout>
 

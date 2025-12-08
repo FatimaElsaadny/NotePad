@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_add_text"
+        android:title="Add Text Note"
+        android:icon="@drawable/ic_write" />
+
+    <item
+        android:id="@+id/menu_add_voice"
+        android:title="Add Voice Note"
+        android:icon="@drawable/ic_microphone" />
+
+</menu>
