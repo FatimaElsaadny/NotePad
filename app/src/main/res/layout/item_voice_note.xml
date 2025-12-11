@@ -11,54 +11,50 @@
     app:strokeColor="@color/cardShadow"
     app:cardBackgroundColor="@color/cardBackground">
 
-    <!-- ROOT CONTAINER -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- LEFT SIDE: PLAY + DURATION -->
-        <LinearLayout
-            android:id="@+id/leftContainer"
+        <ImageButton
+            android:id="@+id/btnPlayAudio"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@null"
+            android:src="@drawable/ic_play_button"
+            app:tint="@color/cardTitleText"
+            android:scaleType="centerInside"
+            android:padding="6dp"
+            android:contentDescription="Play Voice Note" />
+
+        <SeekBar
+            android:id="@+id/seekBarAudio"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/btnPlayAudio"
+            android:layout_marginStart="12dp" />
+
+        <TextView
+            android:id="@+id/audioDuration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:text="00:00"
+            android:textSize="14sp"
+            android:textColor="@color/cardSubtitleText"
+            android:layout_below="@id/seekBarAudio"
+            android:layout_toEndOf="@id/btnPlayAudio"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp" />
 
-            <!-- ✅ TRUE PLAY BUTTON -->
-            <ImageButton
-                android:id="@+id/btnPlayAudio"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@null"
-                android:src="@drawable/ic_play_button"
-                app:tint="@color/cardTitleText"
-                android:scaleType="centerInside"
-                android:padding="6dp"
-                android:contentDescription="Play Voice Note" />
-
-            <!-- Duration -->
-            <TextView
-                android:id="@+id/audioDuration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:layout_marginStart="12dp"
-                android:textColor="@color/cardSubtitleText"
-                android:text="0:12" />
-        </LinearLayout>
-
-        <!-- RIGHT BOTTOM: DATE & TIME -->
         <TextView
             android:id="@+id/audioDateTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
+            android:text="08 Dec • 8:30 PM"
             android:textSize="12sp"
             android:textColor="@color/cardSubtitleText"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"/>
+            android:layout_alignParentBottom="true" />
 
     </RelativeLayout>
-
 </com.google.android.material.card.MaterialCardView>

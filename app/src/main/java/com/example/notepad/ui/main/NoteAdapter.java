@@ -3,10 +3,12 @@ package com.example.notepad.ui.main;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,17 +45,11 @@ public class NoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.noteDao = AppDatabase.getInstance(context).noteDao();
     }
 
-    // ---------------------------
-    // DETERMINE ITEM TYPE
-    // ---------------------------
     @Override
     public int getItemViewType(int position) {
         return notes.get(position).isVoiceNote() ? TYPE_VOICE : TYPE_TEXT;
     }
 
-    // ---------------------------
-    // CREATE VIEW HOLDER
-    // ---------------------------
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(
@@ -70,9 +66,6 @@ public class NoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
     }
 
-    // ---------------------------
-    // BIND VIEW HOLDER
-    // ---------------------------
     @Override
     public void onBindViewHolder(
             @NonNull RecyclerView.ViewHolder holder, int position) {
@@ -85,29 +78,14 @@ public class NoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((VoiceNoteViewHolder) holder).bind(note);
         }
 
-        // ---------------------------
-        // CLICK
-        // ---------------------------
         holder.itemView.setOnClickListener(v -> {
             if (!note.isVoiceNote()) {
                 Intent intent = new Intent(context, EditNoteActivity.class);
                 intent.putExtra("note_id", note.getId());
                 context.startActivity(intent);
-            } else {
-                try {
-                    MediaPlayer player = new MediaPlayer();
-                    player.setDataSource(note.getAudioPath());
-                    player.prepare();
-                    player.start();
-                } catch (Exception e) {
-                    Toast.makeText(context, "Cannot play audio", Toast.LENGTH_SHORT).show();
-                }
             }
         });
 
-        // ---------------------------
-        // LONG CLICK → DELETE
-        // ---------------------------
         holder.itemView.setOnLongClickListener(v -> {
             new AlertDialog.Builder(context)
                     .setTitle("Delete Note")
@@ -150,14 +128,12 @@ public class NoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             super(itemView);
             textTitle = itemView.findViewById(R.id.textTitle);
             textContent = itemView.findViewById(R.id.textContent);
-            textDate = itemView.findViewById(R.id.textDateTime); // ✅ NEW
+            textDate = itemView.findViewById(R.id.textDateTime);
         }
 
         public void bind(Note note) {
             textTitle.setText(note.getTitle());
             textContent.setText(note.getContent());
-
-            // ✅ REAL SYSTEM DATETIME
             textDate.setText(formatDate(note.getCreatedAt()));
         }
     }
@@ -169,28 +145,56 @@ public class NoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         ImageButton playButton;
         TextView duration, voiceDate;
+        SeekBar seekBar;
         MediaPlayer mediaPlayer;
+        Handler handler = new Handler();
 
         public VoiceNoteViewHolder(@NonNull View itemView) {
             super(itemView);
             playButton = itemView.findViewById(R.id.btnPlayAudio);
+            voiceDate = itemView.findViewById(R.id.audioDateTime);
             duration = itemView.findViewById(R.id.audioDuration);
-            voiceDate = itemView.findViewById(R.id.audioDateTime); // ✅ NEW
+            seekBar = itemView.findViewById(R.id.seekBarAudio);
         }
 
         public void bind(Note note) {
 
-            duration.setText("Tap to play");
+            // --- Show Date ---
+            voiceDate.setText(formatDate(note.getCreatedAt()));
 
-            // ✅ REAL SYSTEM DATETIME
-            String date = formatDate(note.getCreatedAt());
-            voiceDate.setText(date);
+            playButton.setImageResource(R.drawable.ic_play_button);
+            seekBar.setProgress(0);
 
+            // =====================================================
+            // ⭐ LOAD REAL AUDIO DURATION BEFORE PLAYING
+            // =====================================================
+            try {
+                MediaPlayer tempPlayer = new MediaPlayer();
+                tempPlayer.setDataSource(note.getAudioPath());
+                tempPlayer.prepare();
+                int dur = tempPlayer.getDuration();
+                duration.setText(formatDuration(dur));
+                tempPlayer.release();
+            } catch (Exception e) {
+                duration.setText("00:00");
+            }
+
+            // =====================================================
+            // PLAY / PAUSE BUTTON
+            // =====================================================
             playButton.setOnClickListener(v -> {
                 try {
+                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                        mediaPlayer.pause();
+                        playButton.setImageResource(R.drawable.ic_play_button);
+                        return;
+                    }
+
                     if (mediaPlayer != null) {
-                        mediaPlayer.release();
-                        mediaPlayer = null;
+                        mediaPlayer.start();
+                        playButton.setImageResource(R.drawable.ic_pause_icone);
+                        updateSeekBar();
+                        return;
                     }
 
                     mediaPlayer = new MediaPlayer();
@@ -198,26 +202,62 @@ public class NoteAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     mediaPlayer.prepare();
                     mediaPlayer.start();
 
+                    seekBar.setMax(mediaPlayer.getDuration());
+                    playButton.setImageResource(R.drawable.ic_pause_icone);
+                    updateSeekBar();
+
                     mediaPlayer.setOnCompletionListener(mp -> {
-                        mp.release();
+                        seekBar.setProgress(0);
+                        playButton.setImageResource(R.drawable.ic_play_button);
+                        mediaPlayer.release();
                         mediaPlayer = null;
                     });
 
                 } catch (Exception e) {
-                    Toast.makeText(itemView.getContext(),
-                            "Cannot play this audio file", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(itemView.getContext(), "Cannot play audio", Toast.LENGTH_SHORT).show();
                 }
             });
+
+            // User scrubs seek bar manually
+            seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar sb, int progress, boolean fromUser) {
+                    if (fromUser && mediaPlayer != null) {
+                        mediaPlayer.seekTo(progress);
+                    }
+                }
+                @Override public void onStartTrackingTouch(SeekBar seekBar) {}
+                @Override public void onStopTrackingTouch(SeekBar seekBar) {}
+            });
+        }
+
+        private void updateSeekBar() {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                        seekBar.setProgress(mediaPlayer.getCurrentPosition());
+                        handler.postDelayed(this, 150);
+                    }
+                }
+            }, 150);
+        }
+
+        // Format duration mm:ss
+        private String formatDuration(int ms) {
+            int sec = ms / 1000;
+            int mins = sec / 60;
+            int s = sec % 60;
+            return String.format(Locale.getDefault(), "%02d:%02d", mins, s);
         }
     }
 
     // ======================================================
-    // DATE FORMATTER (ONE SOURCE OF TRUTH)
+    // DATE FORMATTER
     // ======================================================
     private static String formatDate(long time) {
         if (time == 0) return "";
-        SimpleDateFormat sdf =
-                new SimpleDateFormat("dd MMM  •  hh:mm a", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM • hh:mm a", Locale.getDefault());
         return sdf.format(new Date(time));
     }
 }
